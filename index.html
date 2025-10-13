@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Распределение адресов по весу</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="number"], input[type="text"], select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+        }
+
+        .table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        tbody tr:nth-child(even):hover {
+            background: #f0f0f0;
+        }
+
+        .address {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+
+        .weight-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bar {
+            height: 20px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            min-width: 2px;
+            transition: width 0.3s;
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .percentage {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .top-badge {
+            background: gold;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .copy-btn {
+            padding: 4px 8px;
+            font-size: 0.8em;
+            margin-left: 5px;
+            background: #28a745;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            th, td {
+                padding: 10px 5px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Распределение адресов по весу</h1>
+            <p>Визуализация данных LP snapshot</p>
+        </header>
+
+        <div class="stats" id="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="totalAddresses">-</div>
+                <div class="stat-label">Всего адресов</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="totalWeight">-</div>
+                <div class="stat-label">Общий вес</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="displayedCount">-</div>
+                <div class="stat-label">Отображено</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="limitInput">Показать:</label>
+                <select id="limitInput">
+                    <option value="10">Топ-10</option>
+                    <option value="25">Топ-25</option>
+                    <option value="50" selected>Топ-50</option>
+                    <option value="100">Топ-100</option>
+                    <option value="500">Топ-500</option>
+                    <option value="0">Все</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="searchInput">Поиск:</label>
+                <input type="text" id="searchInput" placeholder="Введите адрес..." style="min-width: 300px;">
+            </div>
+
+            <button onclick="exportToCSV()">📥 Экспорт в CSV</button>
+        </div>
+
+        <div class="table-container">
+            <div id="loading" class="loading">Загрузка данных...</div>
+            <table id="dataTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Адрес</th>
+                        <th>Вес</th>
+                        <th>Процент</th>
+                        <th>Визуализация</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="address_data.js"></script>
+    <script>
+        let currentData = [];
+        let maxWeight = 0;
+
+        function initialize() {
+            if (typeof addressData === 'undefined') {
+                document.getElementById('loading').innerHTML =
+                    '❌ Ошибка: файл address_data.js не загружен.<br>Запустите сначала скрипт: python scripts/export_to_js.py';
+                return;
+            }
+
+            currentData = addressData;
+            maxWeight = Math.max(...addressData.map(item => item.weight));
+
+            // Обновляем статистику
+            document.getElementById('totalAddresses').textContent = totalAddresses.toLocaleString();
+            document.getElementById('totalWeight').textContent = totalWeight.toFixed(6);
+
+            // Показываем таблицу
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dataTable').style.display = 'table';
+
+            // Отображаем данные
+            updateDisplay();
+
+            // Добавляем обработчики
+            document.getElementById('limitInput').addEventListener('change', updateDisplay);
+            document.getElementById('searchInput').addEventListener('input', updateDisplay);
+        }
+
+        function updateDisplay() {
+            const limit = parseInt(document.getElementById('limitInput').value);
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            // Фильтруем данные
+            let filteredData = currentData;
+            if (searchTerm) {
+                filteredData = currentData.filter(item =>
+                    item.address.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Ограничиваем количество
+            const displayData = limit > 0 ? filteredData.slice(0, limit) : filteredData;
+
+            // Обновляем счетчик
+            document.getElementById('displayedCount').textContent = displayData.length.toLocaleString();
+
+            // Заполняем таблицу
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            displayData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                const actualRank = currentData.indexOf(item) + 1;
+                const percentage = (item.weight * 100).toFixed(4);
+                const barWidth = (item.weight / maxWeight * 100);
+
+                row.innerHTML = `
+                    <td>
+                        <span class="rank">#${actualRank}</span>
+                        ${actualRank <= 3 ? '<span class="top-badge">TOP</span>' : ''}
+                    </td>
+                    <td>
+                        <span class="address">${item.address}</span>
+                        <button class="copy-btn" onclick="copyAddress('${item.address}')">📋</button>
+                    </td>
+                    <td>${item.weight.toFixed(8)}</td>
+                    <td class="percentage">${percentage}%</td>
+                    <td>
+                        <div class="weight-bar">
+                            <div class="bar" style="width: ${barWidth}%"></div>
+                        </div>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function copyAddress(address) {
+            navigator.clipboard.writeText(address).then(() => {
+                // Можно добавить уведомление
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓';
+                setTimeout(() => btn.textContent = originalText, 1000);
+            });
+        }
+
+        function exportToCSV() {
+            const csvContent = [
+                ['Rank', 'Address', 'Weight', 'Percentage'],
+                ...currentData.map((item, index) => [
+                    index + 1,
+                    item.address,
+                    item.weight,
+                    (item.weight * 100).toFixed(4) + '%'
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'address_distribution.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
