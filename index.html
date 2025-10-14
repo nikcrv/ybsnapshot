@@ -323,10 +323,10 @@
         </div>
 
         <div class="data-type-selector">
-            <button class="type-btn active" onclick="switchDataType('nonvested')">
+            <button class="type-btn active" data-type="nonvested" onclick="switchDataType('nonvested')">
                 💰 Non-vested
             </button>
-            <button class="type-btn" onclick="switchDataType('vested')">
+            <button class="type-btn" data-type="vested" onclick="switchDataType('vested')">
                 🔒 Vested
             </button>
         </div>
@@ -443,7 +443,7 @@
             // Update buttons
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (btn.textContent.toLowerCase().includes(type)) {
+                if (btn.getAttribute('data-type') === type) {
                     btn.classList.add('active');
                 }
             });
