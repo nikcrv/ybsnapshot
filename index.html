@@ -278,6 +278,26 @@
             line-height: 1.6;
         }
 
+        .disclaimer {
+            padding: 15px 20px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            margin: 20px;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .disclaimer h3 {
+            color: #ffc107;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .disclaimer p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
@@ -296,6 +316,11 @@
             <h1>📊 YB LP Snapshot - Token Distribution</h1>
             <p>Token distribution visualization: Non-vested and Vested</p>
         </header>
+
+        <div class="disclaimer">
+            <h3>⚠️ Important Notice</h3>
+            <p><strong>This is an example distribution and NOT the final allocation.</strong> The data shown here is for demonstration and testing purposes only. The final token distribution will be announced officially by the project team.</p>
+        </div>
 
         <div class="data-type-selector">
             <button class="type-btn active" onclick="switchDataType('nonvested')">
