@@ -1,5 +1,5 @@
 // Данные о распределении адресов (отсортированы по весу)
-const addressData = [
+const addressDataVested = [
   { address: "0x196a2A9A22C2fD8f5107e97Df9ad14A23e81982B", weight: 1497137173590944115740877 },
   { address: "0x1EaFa35d4E5d11fdb3921968379FddD2c0F9023F", weight: 338376158878294341582848 },
   { address: "0x96A98D05449672A06ff621b9AF12f20F61c2330b", weight: 297751903840842201169920 },
