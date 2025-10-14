@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Распределение адресов по весу</title>
+    <title>YB LP Snapshot - Все типы</title>
     <style>
         * {
             margin: 0;
@@ -39,22 +39,55 @@
             margin-bottom: 10px;
         }
 
-        .stats {
-            display: flex;
-            justify-content: space-around;
+        .data-type-selector {
             padding: 20px;
             background: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            gap: 10px;
             flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .type-btn {
+            padding: 12px 30px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .type-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .type-btn.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
         }
 
         .stat-box {
             text-align: center;
-            padding: 15px 30px;
+            padding: 20px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            min-width: 200px;
         }
 
         .stat-value {
@@ -219,13 +252,27 @@
             color: #667eea;
         }
 
+        .dataset-info {
+            padding: 15px 20px;
+            background: #e3f2fd;
+            border-left: 4px solid #667eea;
+            margin: 20px;
+            border-radius: 4px;
+        }
+
+        .dataset-info h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .dataset-info p {
+            color: #555;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8em;
-            }
-
-            .stats {
-                flex-direction: column;
             }
 
             th, td {
@@ -238,9 +285,26 @@
 <body>
     <div class="container">
         <header>
-            <h1>📊 Распределение адресов по весу</h1>
-            <p>Визуализация данных LP snapshot</p>
+            <h1>📊 YB LP Snapshot - Все типы данных</h1>
+            <p>Визуализация распределения: Example, Non-vested, Vested</p>
         </header>
+
+        <div class="data-type-selector">
+            <button class="type-btn active" onclick="switchDataType('example')">
+                📋 Example (Пример)
+            </button>
+            <button class="type-btn" onclick="switchDataType('nonvested')">
+                💰 Non-vested (Не vested)
+            </button>
+            <button class="type-btn" onclick="switchDataType('vested')">
+                🔒 Vested (Vested)
+            </button>
+        </div>
+
+        <div id="datasetInfo" class="dataset-info">
+            <h3>📋 Example (Пример данных)</h3>
+            <p>Пример распределения весов между адресами. Используется для демонстрации.</p>
+        </div>
 
         <div class="stats" id="stats">
             <div class="stat-box">
@@ -285,7 +349,7 @@
                     <tr>
                         <th>№</th>
                         <th>Адрес</th>
-                        <th>Вес</th>
+                        <th>Значение</th>
                         <th>Процент</th>
                         <th>Визуализация</th>
                     </tr>
@@ -296,34 +360,119 @@
     </div>
 
     <script src="address_data.js"></script>
+    <script src="address_data_nonvested.js"></script>
+    <script src="address_data_vested.js"></script>
+
     <script>
+        let allData = {
+            example: null,
+            nonvested: null,
+            vested: null
+        };
+
+        let currentDataType = 'example';
         let currentData = [];
         let maxWeight = 0;
 
+        const datasetDescriptions = {
+            example: {
+                title: '📋 Example (Пример данных)',
+                description: 'Пример распределения весов между адресами. Используется для демонстрации.'
+            },
+            nonvested: {
+                title: '💰 Non-vested (Не vested)',
+                description: 'Распределение токенов без vesting периода. Эти токены доступны для немедленного использования.'
+            },
+            vested: {
+                title: '🔒 Vested (Vested)',
+                description: 'Распределение токенов с vesting периодом. Эти токены разблокируются постепенно со временем.'
+            }
+        };
+
         function initialize() {
-            if (typeof addressData === 'undefined') {
-                document.getElementById('loading').innerHTML =
-                    '❌ Ошибка: файл address_data.js не загружен.<br>Запустите сначала скрипт: python scripts/export_to_js.py';
+            // Загружаем все данные
+            if (typeof addressData !== 'undefined') {
+                allData.example = addressData;
+            }
+
+            // Попробуем загрузить другие данные из глобальной области
+            // (каждый JS файл может экспортировать под своим именем)
+            loadAdditionalData();
+
+            // Показываем текущий датасет
+            switchDataType('example');
+
+            // Добавляем обработчики
+            document.getElementById('limitInput').addEventListener('change', updateDisplay);
+            document.getElementById('searchInput').addEventListener('input', updateDisplay);
+        }
+
+        function loadAdditionalData() {
+            // Данные уже загружены из отдельных JS файлов как глобальные переменные
+            if (typeof addressDataNonvested !== 'undefined') {
+                allData.nonvested = addressDataNonvested;
+            }
+            if (typeof addressDataVested !== 'undefined') {
+                allData.vested = addressDataVested;
+            }
+        }
+
+        function switchDataType(type) {
+            currentDataType = type;
+
+            // Обновляем кнопки
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(type)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Обновляем описание
+            const info = datasetDescriptions[type];
+            const infoDiv = document.getElementById('datasetInfo');
+            infoDiv.innerHTML = `<h3>${info.title}</h3><p>${info.description}</p>`;
+
+            // Загружаем данные
+            currentData = allData[type] || addressData;
+
+            if (!currentData || currentData.length === 0) {
+                document.getElementById('loading').innerHTML = `
+                    ❌ Данные для типа "${type}" не загружены.<br>
+                    Убедитесь что файл address_data_${type}.js существует.
+                `;
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('dataTable').style.display = 'none';
                 return;
             }
 
-            currentData = addressData;
-            maxWeight = Math.max(...addressData.map(item => item.weight));
-
-            // Обновляем статистику
-            document.getElementById('totalAddresses').textContent = totalAddresses.toLocaleString();
-            document.getElementById('totalWeight').textContent = totalWeight.toFixed(6);
+            maxWeight = Math.max(...currentData.map(item => item.weight));
 
             // Показываем таблицу
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dataTable').style.display = 'table';
 
+            // Обновляем статистику
+            updateStats();
+
             // Отображаем данные
             updateDisplay();
+        }
 
-            // Добавляем обработчики
-            document.getElementById('limitInput').addEventListener('change', updateDisplay);
-            document.getElementById('searchInput').addEventListener('input', updateDisplay);
+        function updateStats() {
+            const totalAddresses = currentData.length;
+            const totalWeight = currentData.reduce((sum, item) => sum + item.weight, 0);
+
+            document.getElementById('totalAddresses').textContent = totalAddresses.toLocaleString();
+
+            // Форматируем totalWeight в зависимости от размера
+            if (totalWeight > 1000000) {
+                document.getElementById('totalWeight').textContent = (totalWeight / 1000000).toFixed(2) + 'M';
+            } else if (totalWeight > 1000) {
+                document.getElementById('totalWeight').textContent = (totalWeight / 1000).toFixed(2) + 'K';
+            } else {
+                document.getElementById('totalWeight').textContent = totalWeight.toFixed(6);
+            }
         }
 
         function updateDisplay() {
@@ -351,7 +500,9 @@
             displayData.forEach((item, index) => {
                 const row = document.createElement('tr');
                 const actualRank = currentData.indexOf(item) + 1;
-                const percentage = (item.weight * 100).toFixed(4);
+
+                const totalWeight = currentData.reduce((sum, i) => sum + i.weight, 0);
+                const percentage = (item.weight / totalWeight * 100).toFixed(4);
                 const barWidth = (item.weight / maxWeight * 100);
 
                 row.innerHTML = `
@@ -363,7 +514,7 @@
                         <span class="address">${item.address}</span>
                         <button class="copy-btn" onclick="copyAddress('${item.address}')">📋</button>
                     </td>
-                    <td>${item.weight.toFixed(8)}</td>
+                    <td>${formatWeight(item.weight)}</td>
                     <td class="percentage">${percentage}%</td>
                     <td>
                         <div class="weight-bar">
@@ -376,9 +527,22 @@
             });
         }
 
+        function formatWeight(weight) {
+            if (weight > 1000000000000) {
+                return (weight / 1000000000000).toFixed(2) + 'T';
+            } else if (weight > 1000000000) {
+                return (weight / 1000000000).toFixed(2) + 'B';
+            } else if (weight > 1000000) {
+                return (weight / 1000000).toFixed(2) + 'M';
+            } else if (weight > 1) {
+                return weight.toFixed(2);
+            } else {
+                return weight.toFixed(8);
+            }
+        }
+
         function copyAddress(address) {
             navigator.clipboard.writeText(address).then(() => {
-                // Можно добавить уведомление
                 const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = '✓';
@@ -389,19 +553,22 @@
         function exportToCSV() {
             const csvContent = [
                 ['Rank', 'Address', 'Weight', 'Percentage'],
-                ...currentData.map((item, index) => [
-                    index + 1,
-                    item.address,
-                    item.weight,
-                    (item.weight * 100).toFixed(4) + '%'
-                ])
+                ...currentData.map((item, index) => {
+                    const totalWeight = currentData.reduce((sum, i) => sum + i.weight, 0);
+                    return [
+                        index + 1,
+                        item.address,
+                        item.weight,
+                        (item.weight / totalWeight * 100).toFixed(4) + '%'
+                    ];
+                })
             ].map(row => row.join(',')).join('\n');
 
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'address_distribution.csv';
+            a.download = `address_distribution_${currentDataType}.csv`;
             a.click();
             window.URL.revokeObjectURL(url);
         }
