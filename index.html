@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YB LP Snapshot - Все типы</title>
+    <title>YB LP Snapshot - Distribution</title>
     <style>
         * {
             margin: 0;
@@ -285,73 +285,70 @@
 <body>
     <div class="container">
         <header>
-            <h1>📊 YB LP Snapshot - Все типы данных</h1>
-            <p>Визуализация распределения: Example, Non-vested, Vested</p>
+            <h1>📊 YB LP Snapshot - Token Distribution</h1>
+            <p>Token distribution visualization: Non-vested and Vested</p>
         </header>
 
         <div class="data-type-selector">
-            <button class="type-btn active" onclick="switchDataType('example')">
-                📋 Example (Пример)
-            </button>
-            <button class="type-btn" onclick="switchDataType('nonvested')">
-                💰 Non-vested (Не vested)
+            <button class="type-btn active" onclick="switchDataType('nonvested')">
+                💰 Non-vested
             </button>
             <button class="type-btn" onclick="switchDataType('vested')">
-                🔒 Vested (Vested)
+                🔒 Vested
             </button>
         </div>
 
         <div id="datasetInfo" class="dataset-info">
-            <h3>📋 Example (Пример данных)</h3>
-            <p>Пример распределения весов между адресами. Используется для демонстрации.</p>
+            <h3>💰 Non-vested</h3>
+            <p>Token distribution without vesting period. These tokens are available for immediate use.</p>
         </div>
 
         <div class="stats" id="stats">
             <div class="stat-box">
                 <div class="stat-value" id="totalAddresses">-</div>
-                <div class="stat-label">Всего адресов</div>
+                <div class="stat-label">Total Addresses</div>
             </div>
             <div class="stat-box">
                 <div class="stat-value" id="totalWeight">-</div>
-                <div class="stat-label">Общий вес</div>
+                <div class="stat-label">Total Weight</div>
             </div>
             <div class="stat-box">
                 <div class="stat-value" id="displayedCount">-</div>
-                <div class="stat-label">Отображено</div>
+                <div class="stat-label">Displayed</div>
             </div>
         </div>
 
         <div class="controls">
             <div class="control-group">
-                <label for="limitInput">Показать:</label>
+                <label for="limitInput">Show:</label>
                 <select id="limitInput">
-                    <option value="10">Топ-10</option>
-                    <option value="25">Топ-25</option>
-                    <option value="50" selected>Топ-50</option>
-                    <option value="100">Топ-100</option>
-                    <option value="500">Топ-500</option>
-                    <option value="0">Все</option>
+                    <option value="10">Top-10</option>
+                    <option value="25">Top-25</option>
+                    <option value="50" selected>Top-50</option>
+                    <option value="100">Top-100</option>
+                    <option value="500">Top-500</option>
+                    <option value="0">All</option>
                 </select>
             </div>
 
             <div class="control-group">
-                <label for="searchInput">Поиск:</label>
-                <input type="text" id="searchInput" placeholder="Введите адрес..." style="min-width: 300px;">
+                <label for="searchInput">Search:</label>
+                <input type="text" id="searchInput" placeholder="Enter address..." style="min-width: 300px;">
             </div>
 
-            <button onclick="exportToCSV()">📥 Экспорт в CSV</button>
+            <button onclick="exportToCSV()">📥 Export to CSV</button>
         </div>
 
         <div class="table-container">
-            <div id="loading" class="loading">Загрузка данных...</div>
+            <div id="loading" class="loading">Loading data...</div>
             <table id="dataTable" style="display: none;">
                 <thead>
                     <tr>
-                        <th>№</th>
-                        <th>Адрес</th>
-                        <th>Значение</th>
-                        <th>Процент</th>
-                        <th>Визуализация</th>
+                        <th>#</th>
+                        <th>Address</th>
+                        <th>Amount</th>
+                        <th>Percentage</th>
+                        <th>Visualization</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -359,56 +356,44 @@
         </div>
     </div>
 
-    <script src="address_data.js"></script>
     <script src="address_data_nonvested.js"></script>
     <script src="address_data_vested.js"></script>
 
     <script>
         let allData = {
-            example: null,
             nonvested: null,
             vested: null
         };
 
-        let currentDataType = 'example';
+        let currentDataType = 'nonvested';
         let currentData = [];
         let maxWeight = 0;
 
         const datasetDescriptions = {
-            example: {
-                title: '📋 Example (Пример данных)',
-                description: 'Пример распределения весов между адресами. Используется для демонстрации.'
-            },
             nonvested: {
-                title: '💰 Non-vested (Не vested)',
-                description: 'Распределение токенов без vesting периода. Эти токены доступны для немедленного использования.'
+                title: '💰 Non-vested',
+                description: 'Token distribution without vesting period. These tokens are available for immediate use.'
             },
             vested: {
-                title: '🔒 Vested (Vested)',
-                description: 'Распределение токенов с vesting периодом. Эти токены разблокируются постепенно со временем.'
+                title: '🔒 Vested',
+                description: 'Token distribution with vesting period. These tokens unlock gradually over time.'
             }
         };
 
         function initialize() {
-            // Загружаем все данные
-            if (typeof addressData !== 'undefined') {
-                allData.example = addressData;
-            }
-
-            // Попробуем загрузить другие данные из глобальной области
-            // (каждый JS файл может экспортировать под своим именем)
+            // Load data from global scope
             loadAdditionalData();
 
-            // Показываем текущий датасет
-            switchDataType('example');
+            // Show current dataset
+            switchDataType('nonvested');
 
-            // Добавляем обработчики
+            // Add event handlers
             document.getElementById('limitInput').addEventListener('change', updateDisplay);
             document.getElementById('searchInput').addEventListener('input', updateDisplay);
         }
 
         function loadAdditionalData() {
-            // Данные уже загружены из отдельных JS файлов как глобальные переменные
+            // Data already loaded from separate JS files as global variables
             if (typeof addressDataNonvested !== 'undefined') {
                 allData.nonvested = addressDataNonvested;
             }
@@ -420,7 +405,7 @@
         function switchDataType(type) {
             currentDataType = type;
 
-            // Обновляем кнопки
+            // Update buttons
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.textContent.toLowerCase().includes(type)) {
@@ -428,18 +413,18 @@
                 }
             });
 
-            // Обновляем описание
+            // Update description
             const info = datasetDescriptions[type];
             const infoDiv = document.getElementById('datasetInfo');
             infoDiv.innerHTML = `<h3>${info.title}</h3><p>${info.description}</p>`;
 
-            // Загружаем данные
-            currentData = allData[type] || addressData;
+            // Load data
+            currentData = allData[type];
 
             if (!currentData || currentData.length === 0) {
                 document.getElementById('loading').innerHTML = `
-                    ❌ Данные для типа "${type}" не загружены.<br>
-                    Убедитесь что файл address_data_${type}.js существует.
+                    ❌ Data for "${type}" not loaded.<br>
+                    Make sure the file address_data_${type}.js exists.
                 `;
                 document.getElementById('loading').style.display = 'block';
                 document.getElementById('dataTable').style.display = 'none';
@@ -448,14 +433,14 @@
 
             maxWeight = Math.max(...currentData.map(item => item.weight));
 
-            // Показываем таблицу
+            // Show table
             document.getElementById('loading').style.display = 'none';
             document.getElementById('dataTable').style.display = 'table';
 
-            // Обновляем статистику
+            // Update statistics
             updateStats();
 
-            // Отображаем данные
+            // Display data
             updateDisplay();
         }
 
@@ -465,13 +450,36 @@
 
             document.getElementById('totalAddresses').textContent = totalAddresses.toLocaleString();
 
-            // Форматируем totalWeight в зависимости от размера
-            if (totalWeight > 1000000) {
-                document.getElementById('totalWeight').textContent = (totalWeight / 1000000).toFixed(2) + 'M';
-            } else if (totalWeight > 1000) {
-                document.getElementById('totalWeight').textContent = (totalWeight / 1000).toFixed(2) + 'K';
+            // Determine if normalization is needed (very large numbers are wei)
+            const needsNormalization = totalWeight > 1e20; // If > 100 trillion - it's wei
+
+            let displayWeight = totalWeight;
+            let suffix = '';
+
+            if (needsNormalization) {
+                // Normalize: divide by 10^18 to get tokens
+                displayWeight = totalWeight / 1e18;
+                suffix = ' tokens';
+
+                // Format tokens
+                if (displayWeight > 1e9) {
+                    document.getElementById('totalWeight').textContent = (displayWeight / 1e9).toFixed(2) + 'B' + suffix;
+                } else if (displayWeight > 1e6) {
+                    document.getElementById('totalWeight').textContent = (displayWeight / 1e6).toFixed(2) + 'M' + suffix;
+                } else if (displayWeight > 1e3) {
+                    document.getElementById('totalWeight').textContent = (displayWeight / 1e3).toFixed(2) + 'K' + suffix;
+                } else {
+                    document.getElementById('totalWeight').textContent = displayWeight.toFixed(2) + suffix;
+                }
             } else {
-                document.getElementById('totalWeight').textContent = totalWeight.toFixed(6);
+                // Format as weights (0 to 1)
+                if (totalWeight > 1000000) {
+                    document.getElementById('totalWeight').textContent = (totalWeight / 1000000).toFixed(2) + 'M';
+                } else if (totalWeight > 1000) {
+                    document.getElementById('totalWeight').textContent = (totalWeight / 1000).toFixed(2) + 'K';
+                } else {
+                    document.getElementById('totalWeight').textContent = totalWeight.toFixed(6);
+                }
             }
         }
 
@@ -479,7 +487,7 @@
             const limit = parseInt(document.getElementById('limitInput').value);
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
 
-            // Фильтруем данные
+            // Filter data
             let filteredData = currentData;
             if (searchTerm) {
                 filteredData = currentData.filter(item =>
@@ -487,13 +495,13 @@
                 );
             }
 
-            // Ограничиваем количество
+            // Limit quantity
             const displayData = limit > 0 ? filteredData.slice(0, limit) : filteredData;
 
-            // Обновляем счетчик
+            // Update counter
             document.getElementById('displayedCount').textContent = displayData.length.toLocaleString();
 
-            // Заполняем таблицу
+            // Fill table
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
@@ -528,16 +536,30 @@
         }
 
         function formatWeight(weight) {
-            if (weight > 1000000000000) {
-                return (weight / 1000000000000).toFixed(2) + 'T';
-            } else if (weight > 1000000000) {
-                return (weight / 1000000000).toFixed(2) + 'B';
-            } else if (weight > 1000000) {
-                return (weight / 1000000).toFixed(2) + 'M';
-            } else if (weight > 1) {
-                return weight.toFixed(2);
+            // Determine if normalization is needed (very large numbers are wei)
+            const needsNormalization = weight > 1e15; // If > quadrillion - it's wei
+
+            if (needsNormalization) {
+                // Normalize: divide by 10^18 to get tokens
+                const tokens = weight / 1e18;
+
+                // Format tokens
+                if (tokens > 1e9) {
+                    return (tokens / 1e9).toFixed(2) + 'B tokens';
+                } else if (tokens > 1e6) {
+                    return (tokens / 1e6).toFixed(2) + 'M tokens';
+                } else if (tokens > 1e3) {
+                    return (tokens / 1e3).toFixed(2) + 'K tokens';
+                } else {
+                    return tokens.toFixed(2) + ' tokens';
+                }
             } else {
-                return weight.toFixed(8);
+                // Format as weights (0 to 1) or regular numbers
+                if (weight > 1) {
+                    return weight.toFixed(2);
+                } else {
+                    return weight.toFixed(8);
+                }
             }
         }
 
@@ -573,7 +595,7 @@
             window.URL.revokeObjectURL(url);
         }
 
-        // Инициализация при загрузке страницы
+        // Initialize on page load
         window.addEventListener('DOMContentLoaded', initialize);
     </script>
 </body>
