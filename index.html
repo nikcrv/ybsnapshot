@@ -511,6 +511,12 @@
 
             document.getElementById('totalAddresses').textContent = totalAddresses.toLocaleString();
 
+            // Special case for voters: show fixed pool of 5M YB
+            if (currentDataType === 'voters') {
+                document.getElementById('totalWeight').textContent = '5.00M YB';
+                return;
+            }
+
             // Determine if normalization is needed (very large numbers are wei)
             const needsNormalization = totalWeight > 1e20; // If > 100 trillion - it's wei
 
