@@ -314,7 +314,7 @@
     <div class="container">
         <header>
             <h1>📊 YB LP Snapshot - Token Distribution</h1>
-            <p>Token distribution visualization: Non-vested and Vested</p>
+            <p>Token distribution visualization: Non-vested, Vested, and Voters</p>
         </header>
 
         <div class="disclaimer">
@@ -328,6 +328,9 @@
             </button>
             <button class="type-btn" data-type="vested" onclick="switchDataType('vested')">
                 🔒 Vested
+            </button>
+            <button class="type-btn" data-type="voters" onclick="switchDataType('voters')">
+                🗳️ Voters
             </button>
         </div>
 
@@ -393,11 +396,13 @@
 
     <script src="address_data_nonvested.js"></script>
     <script src="address_data_vested.js"></script>
+    <script src="address_data_voters.js"></script>
 
     <script>
         let allData = {
             nonvested: null,
-            vested: null
+            vested: null,
+            voters: null
         };
 
         let currentDataType = 'nonvested';
@@ -412,6 +417,10 @@
             vested: {
                 title: '🔒 Vested',
                 description: 'Token distribution with vesting period. These tokens unlock gradually over time.'
+            },
+            voters: {
+                title: '🗳️ Voters',
+                description: 'Token drop for governance voters. Distribution based on voting power across multiple governance votes (Dec 6, Dec 13, Dec 22).'
             }
         };
 
@@ -434,6 +443,9 @@
             }
             if (typeof addressDataVested !== 'undefined') {
                 allData.vested = addressDataVested;
+            }
+            if (typeof addressDataVoters !== 'undefined') {
+                allData.voters = addressDataVoters;
             }
         }
 
