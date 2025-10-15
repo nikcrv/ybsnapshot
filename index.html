@@ -208,6 +208,13 @@
             font-size: 0.9em;
         }
 
+        .address-name {
+            font-weight: 700;
+            color: #764ba2;
+            font-size: 1em;
+            margin-right: 8px;
+        }
+
         .weight-bar {
             display: flex;
             align-items: center;
@@ -399,6 +406,13 @@
     <script src="address_data_voters.js"></script>
 
     <script>
+        // Known wallet names mapping
+        const knownWallets = {
+            '0x989AEb4d175e16225E39E87d0D97A3360524AD80': 'Convex',
+            '0x52f541764E6e90eeBc5c21Ff570De0e2D63766B6': 'StakeDAO',
+            '0xF147b8125d2ef93FB6965Db97D6746952a133934': 'Yearn Finance'
+        };
+
         let allData = {
             nonvested: null,
             vested: null,
@@ -420,7 +434,7 @@
             },
             voters: {
                 title: '🗳️ Voters',
-                description: 'Token drop for governance voters. Distribution based on voting power across multiple governance votes (Dec 6, Dec 13, Dec 22).'
+                description: 'Governance rewards for Curve DAO supporters. Total pool: 5,000,000 YB tokens distributed proportionally to veCRV votes for proposals 1206, 1213, 1222. Yield Aggregation platforms like Convex will manage rewards distribution to their community members.'
             }
         };
 
@@ -566,7 +580,7 @@
                         ${actualRank <= 3 ? '<span class="top-badge">TOP</span>' : ''}
                     </td>
                     <td>
-                        <span class="address">${item.address}</span>
+                        ${formatAddress(item.address)}
                         <button class="copy-btn" onclick="copyAddress('${item.address}')">📋</button>
                     </td>
                     <td>${formatWeight(item.weight)}</td>
@@ -580,6 +594,15 @@
 
                 tbody.appendChild(row);
             });
+        }
+
+        function formatAddress(address) {
+            // Check if this is a known wallet
+            const knownName = knownWallets[address];
+            if (knownName) {
+                return `<span class="address-name">${knownName}</span> <span class="address" style="font-size: 0.8em; opacity: 0.7;">(${address.slice(0, 6)}...${address.slice(-4)})</span>`;
+            }
+            return `<span class="address">${address}</span>`;
         }
 
         function formatWeight(weight) {
