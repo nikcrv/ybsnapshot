@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YB Token Distribution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,109 +13,143 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
+            font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 50%, #141414 100%);
+            background-attachment: fixed;
+            color: #FFFFFF;
+            padding: 24px;
+            line-height: 1.5;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+            margin-bottom: 32px;
         }
 
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .data-type-selector {
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #ddd;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .type-btn {
-            padding: 12px 30px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 8px;
-            cursor: pointer;
+            font-size: 32px;
             font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
             font-size: 16px;
-            transition: all 0.3s;
+            color: #888888;
         }
 
-        .type-btn:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        .warning {
+            background: #1A1A1A;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #CCCCCC;
+            line-height: 1.6;
         }
 
-        .type-btn.active {
-            background: #667eea;
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        .warning a {
+            color: #49C4C9;
+            text-decoration: none;
+            transition: color 0.2s;
         }
 
-        .stats {
+        .warning a:hover {
+            color: #62edf4;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #2A2A2A;
+        }
+
+        .tab {
+            background: none;
+            border: none;
+            color: #888888;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #49C4C9;
+        }
+
+        .tab.active {
+            color: #49C4C9;
+            border-bottom-color: #49C4C9;
+        }
+
+        .info-box {
+            background: #1A1A1A;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .info-box h3 {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 16px;
+            background: #141414;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #888888;
+        }
+
+        .info-box p {
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            padding: 20px;
-            background: #f8f9fa;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .stat-box {
-            text-align: center;
+        .stat-card {
+            background: #1A1A1A;
             padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .stat-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            color: #666;
-            margin-top: 5px;
-            font-size: 0.9em;
+            font-size: 14px;
+            color: #888888;
         }
 
         .controls {
-            padding: 20px;
-            background: #f8f9fa;
+            background: #1A1A1A;
+            padding: 16px;
+            margin-bottom: 16px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 16px;
             align-items: center;
+            flex-wrap: wrap;
             justify-content: space-between;
         }
 
         .controls-left {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -122,45 +157,46 @@
         .control-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         label {
-            font-weight: 600;
-            color: #333;
-        }
-
-        input[type="number"], input[type="text"], select {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            color: #CCCCCC;
         }
 
-        input[type="number"]:focus, input[type="text"]:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
+        select, input[type="text"] {
+            background: #0F0F0F;
+            border: none;
+            color: #FFFFFF;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: 1px solid #49C4C9;
         }
 
         button {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
+            background: #49C4C9;
+            color: #0F0F0F;
             border: none;
-            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
+            font-family: inherit;
+            transition: background 0.2s;
         }
 
         button:hover {
-            background: #764ba2;
+            background: #62edf4;
         }
 
-        .table-container {
-            padding: 20px;
-            overflow-x: auto;
+        .table-wrapper {
+            background: #1A1A1A;
+            overflow: hidden;
         }
 
         table {
@@ -169,161 +205,109 @@
         }
 
         thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
+            background: #0F0F0F;
+            border-bottom: 1px solid #2A2A2A;
         }
 
         th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
             font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        tbody tr {
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #2A2A2A;
+            font-size: 14px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
         }
 
         tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #fafafa;
-        }
-
-        tbody tr:nth-child(even):hover {
-            background: #f0f0f0;
+            background: #222222;
         }
 
         .address {
-            font-family: 'Courier New', monospace;
-            color: #667eea;
-            font-size: 0.9em;
+            font-family: 'Geist Mono', monospace;
+            font-size: 13px;
+            color: #FFFFFF;
         }
 
-        .address-name {
-            font-weight: 700;
-            color: #764ba2;
-            font-size: 1em;
+        .address-label {
+            color: #FFFFFF;
+            font-weight: 500;
             margin-right: 8px;
         }
 
-        .weight-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .rank {
+            color: #888888;
+            font-weight: 500;
+        }
+
+        .amount {
+            font-weight: 500;
+        }
+
+        .bar-container {
+            width: 100%;
+            height: 4px;
+            background: #2A2A2A;
+            overflow: hidden;
         }
 
         .bar {
-            height: 20px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-            min-width: 2px;
+            height: 100%;
+            background: #49C4C9;
             transition: width 0.3s;
         }
 
-        .rank {
-            font-weight: bold;
-            color: #764ba2;
-        }
-
-        .percentage {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .top-badge {
-            background: gold;
-            color: #333;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            font-weight: bold;
+        .copy-btn {
+            background: transparent;
+            color: #888888;
+            border: none;
+            padding: 4px 8px;
+            font-size: 12px;
             margin-left: 8px;
         }
 
-        .copy-btn {
-            padding: 4px 8px;
-            font-size: 0.8em;
-            margin-left: 5px;
-            background: #28a745;
-        }
-
         .copy-btn:hover {
-            background: #218838;
+            color: #49C4C9;
+            background: transparent;
         }
 
         .loading {
             text-align: center;
-            padding: 50px;
-            font-size: 1.2em;
-            color: #667eea;
-        }
-
-        .dataset-info {
-            padding: 15px 20px;
-            background: #e3f2fd;
-            border-left: 4px solid #667eea;
-            margin: 20px;
-            border-radius: 4px;
-        }
-
-        .dataset-info h3 {
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .dataset-info p {
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .disclaimer {
-            padding: 15px 20px;
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            margin: 20px;
-            border-radius: 4px;
-            color: #856404;
-        }
-
-        .disclaimer h3 {
-            color: #ffc107;
-            margin-bottom: 8px;
-            font-size: 1.1em;
-        }
-
-        .disclaimer p {
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .disclaimer a {
-            color: #856404;
-            font-weight: 600;
-            text-decoration: underline;
-            transition: opacity 0.2s;
-        }
-
-        .disclaimer a:hover {
-            opacity: 0.8;
+            padding: 48px;
+            color: #888888;
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
             h1 {
-                font-size: 1.8em;
+                font-size: 24px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-left {
+                flex-direction: column;
             }
 
             th, td {
-                padding: 10px 5px;
-                font-size: 0.9em;
+                padding: 12px;
+                font-size: 13px;
             }
         }
     </style>
@@ -331,42 +315,38 @@
 <body>
     <div class="container">
         <header>
-            <h1>📊 YB Token Distribution</h1>
-            <p>Token allocation visualization: Non-vested, Vested, and Governance Voters</p>
+            <h1>YB Token Distribution</h1>
+            <p class="subtitle">Season 1 LP rewards and governance voter allocations</p>
         </header>
 
-        <div class="disclaimer">
-            <h3>📋 Data Sources</h3>
-            <p>This page displays token distribution based on official data from the <a href="https://github.com/yield-basis/yb-lp-snapshot" target="_blank">YieldBasis GitHub repository</a> and the <a href="https://x.com/yieldbasis/status/1978355190831960448" target="_blank">official announcement tweet</a>.</p>
+        <div class="warning">
+            <strong>Data Sources:</strong> This page displays token distribution based on official data from the
+            <a href="https://github.com/yield-basis/yb-lp-snapshot" target="_blank">YieldBasis GitHub repository</a>
+            and the
+            <a href="https://x.com/yieldbasis/status/1978355190831960448" target="_blank">official announcement tweet</a>.
         </div>
 
-        <div class="data-type-selector">
-            <button class="type-btn active" data-type="nonvested" onclick="switchDataType('nonvested')">
-                💰 Non-vested
-            </button>
-            <button class="type-btn" data-type="vested" onclick="switchDataType('vested')">
-                🔒 Vested
-            </button>
-            <button class="type-btn" data-type="voters" onclick="switchDataType('voters')">
-                🗳️ Voters
-            </button>
+        <div class="tabs">
+            <button class="tab active" data-type="nonvested" onclick="switchTab('nonvested')">Non-vested</button>
+            <button class="tab" data-type="vested" onclick="switchTab('vested')">Vested</button>
+            <button class="tab" data-type="voters" onclick="switchTab('voters')">Voters</button>
         </div>
 
-        <div id="datasetInfo" class="dataset-info">
-            <h3>💰 Non-vested</h3>
-            <p>Token distribution without vesting period. These tokens are available for immediate use.</p>
+        <div id="info" class="info-box">
+            <h3>Non-vested</h3>
+            <p>Immediately available tokens for Season 1 LPs (1M-30M cap). Includes full rewards ≤5,000 YB and the unlocked portion (5,000 YB) for larger allocations. Total: 736,861 YB across 4,046 addresses.</p>
         </div>
 
-        <div class="stats" id="stats">
-            <div class="stat-box">
+        <div class="stats-grid">
+            <div class="stat-card">
                 <div class="stat-value" id="totalAddresses">-</div>
-                <div class="stat-label">Total Addresses</div>
+                <div class="stat-label">Addresses</div>
             </div>
-            <div class="stat-box">
-                <div class="stat-value" id="totalWeight">-</div>
-                <div class="stat-label">Total Distribution</div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalAmount">-</div>
+                <div class="stat-label">Total Amount</div>
             </div>
-            <div class="stat-box">
+            <div class="stat-card">
                 <div class="stat-value" id="displayedCount">-</div>
                 <div class="stat-label">Displayed</div>
             </div>
@@ -375,39 +355,36 @@
         <div class="controls">
             <div class="controls-left">
                 <div class="control-group">
-                    <label for="limitInput">Show:</label>
-                    <select id="limitInput">
-                        <option value="10">Top-10</option>
-                        <option value="25">Top-25</option>
-                        <option value="50" selected>Top-50</option>
-                        <option value="100">Top-100</option>
-                        <option value="500">Top-500</option>
+                    <label for="limitSelect">Show:</label>
+                    <select id="limitSelect">
+                        <option value="10">Top 10</option>
+                        <option value="25">Top 25</option>
+                        <option value="50" selected>Top 50</option>
+                        <option value="100">Top 100</option>
                         <option value="0">All</option>
                     </select>
                 </div>
-
                 <div class="control-group">
                     <label for="searchInput">Search:</label>
-                    <input type="text" id="searchInput" placeholder="Enter address..." style="min-width: 300px;">
+                    <input type="text" id="searchInput" placeholder="Address..." style="width: 300px;">
                 </div>
             </div>
-
-            <button onclick="exportToCSV()">📥 Export to CSV</button>
+            <button onclick="exportCSV()">Export CSV</button>
         </div>
 
-        <div class="table-container">
-            <div id="loading" class="loading">Loading data...</div>
-            <table id="dataTable" style="display: none;">
+        <div class="table-wrapper">
+            <div id="loading" class="loading">Loading...</div>
+            <table id="table" style="display: none;">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Rank</th>
                         <th>Address</th>
                         <th>Amount</th>
-                        <th>Percentage</th>
-                        <th>Visualization</th>
+                        <th>Share</th>
+                        <th>Distribution</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="tbody"></tbody>
             </table>
         </div>
     </div>
@@ -417,273 +394,178 @@
     <script src="address_data_voters.js"></script>
 
     <script>
-        // Known wallet names mapping
         const knownWallets = {
             '0x989AEb4d175e16225E39E87d0D97A3360524AD80': 'Convex',
             '0x52f541764E6e90eeBc5c21Ff570De0e2D63766B6': 'StakeDAO',
             '0xF147b8125d2ef93FB6965Db97D6746952a133934': 'Yearn Finance'
         };
 
-        let allData = {
+        let data = {
             nonvested: null,
             vested: null,
             voters: null
         };
 
-        let currentDataType = 'nonvested';
+        let currentType = 'nonvested';
         let currentData = [];
         let maxWeight = 0;
 
-        const datasetDescriptions = {
+        const descriptions = {
             nonvested: {
-                title: '💰 Non-vested',
-                description: 'Immediately available tokens for Season 1 LPs (1M-30M cap). Includes full rewards ≤5,000 YB and the unlocked portion (5,000 YB) for larger allocations. Total: 736,861 YB across 4,046 addresses.'
+                title: 'Non-vested',
+                text: 'Immediately available tokens for Season 1 LPs (1M-30M cap). Includes full rewards ≤5,000 YB and the unlocked portion (5,000 YB) for larger allocations. Total: 736,861 YB across 4,046 addresses.'
             },
             vested: {
-                title: '🔒 Vested',
-                description: 'Time-locked rewards for top Season 1 LPs with allocations >5,000 YB. Distributed via 1-year linear vesting schedule. Total: 4,888,139 YB across 96 addresses.'
+                title: 'Vested',
+                text: 'Time-locked rewards for top Season 1 LPs with allocations >5,000 YB. Distributed via 1-year linear vesting schedule. Total: 4,888,139 YB across 96 addresses.'
             },
             voters: {
-                title: '🗳️ Voters',
-                description: 'Governance rewards for Curve DAO voters who supported YieldBasis proposals 1206, 1213, 1222. Distributed proportionally to veCRV voting power. Yield Aggregation platforms (Convex, StakeDAO) manage distribution to their communities. Total: 5,000,000 YB across 239 addresses.'
+                title: 'Voters',
+                text: 'Governance rewards for Curve DAO voters who supported YieldBasis proposals 1206, 1213, 1222. Distributed proportionally to veCRV voting power. Yield Aggregation platforms (Convex, StakeDAO) manage distribution to their communities. Total: 5,000,000 YB across 239 addresses.'
             }
         };
 
-        function initialize() {
-            // Load data from global scope
-            loadAdditionalData();
+        function init() {
+            if (typeof addressDataNonvested !== 'undefined') data.nonvested = addressDataNonvested;
+            if (typeof addressDataVested !== 'undefined') data.vested = addressDataVested;
+            if (typeof addressDataVoters !== 'undefined') data.voters = addressDataVoters;
 
-            // Show current dataset
-            switchDataType('nonvested');
-
-            // Add event handlers
-            document.getElementById('limitInput').addEventListener('change', updateDisplay);
-            document.getElementById('searchInput').addEventListener('input', updateDisplay);
+            switchTab('nonvested');
+            document.getElementById('limitSelect').addEventListener('change', render);
+            document.getElementById('searchInput').addEventListener('input', render);
         }
 
-        function loadAdditionalData() {
-            // Data already loaded from separate JS files as global variables
-            if (typeof addressDataNonvested !== 'undefined') {
-                allData.nonvested = addressDataNonvested;
-            }
-            if (typeof addressDataVested !== 'undefined') {
-                allData.vested = addressDataVested;
-            }
-            if (typeof addressDataVoters !== 'undefined') {
-                allData.voters = addressDataVoters;
-            }
-        }
+        function switchTab(type) {
+            currentType = type;
 
-        function switchDataType(type) {
-            currentDataType = type;
-
-            // Update buttons
-            document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.getAttribute('data-type') === type) {
-                    btn.classList.add('active');
-                }
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.type === type);
             });
 
-            // Update description
-            const info = datasetDescriptions[type];
-            const infoDiv = document.getElementById('datasetInfo');
-            infoDiv.innerHTML = `<h3>${info.title}</h3><p>${info.description}</p>`;
+            const desc = descriptions[type];
+            document.getElementById('info').innerHTML = `<h3>${desc.title}</h3><p>${desc.text}</p>`;
 
-            // Load data
-            currentData = allData[type];
-
+            currentData = data[type];
             if (!currentData || currentData.length === 0) {
-                document.getElementById('loading').innerHTML = `
-                    ❌ Data for "${type}" not loaded.<br>
-                    Make sure the file address_data_${type}.js exists.
-                `;
+                document.getElementById('loading').textContent = 'Data not available';
                 document.getElementById('loading').style.display = 'block';
-                document.getElementById('dataTable').style.display = 'none';
+                document.getElementById('table').style.display = 'none';
                 return;
             }
 
-            maxWeight = Math.max(...currentData.map(item => item.weight));
-
-            // Show table
+            maxWeight = Math.max(...currentData.map(i => i.weight));
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('dataTable').style.display = 'table';
+            document.getElementById('table').style.display = 'table';
 
-            // Update statistics
             updateStats();
-
-            // Display data
-            updateDisplay();
+            render();
         }
 
         function updateStats() {
-            const totalAddresses = currentData.length;
-            const totalWeight = currentData.reduce((sum, item) => sum + item.weight, 0);
+            const total = currentData.reduce((s, i) => s + i.weight, 0);
+            document.getElementById('totalAddresses').textContent = currentData.length.toLocaleString();
 
-            document.getElementById('totalAddresses').textContent = totalAddresses.toLocaleString();
-
-            // Special case for voters: show fixed pool of 5M YB
-            if (currentDataType === 'voters') {
-                document.getElementById('totalWeight').textContent = '5.00M YB';
-                return;
-            }
-
-            // Determine if normalization is needed (very large numbers are wei)
-            const needsNormalization = totalWeight > 1e20; // If > 100 trillion - it's wei
-
-            let displayWeight = totalWeight;
-            let suffix = '';
-
-            if (needsNormalization) {
-                // Normalize: divide by 10^18 to get tokens
-                displayWeight = totalWeight / 1e18;
-                suffix = ' tokens';
-
-                // Format tokens
-                if (displayWeight > 1e9) {
-                    document.getElementById('totalWeight').textContent = (displayWeight / 1e9).toFixed(2) + 'B' + suffix;
-                } else if (displayWeight > 1e6) {
-                    document.getElementById('totalWeight').textContent = (displayWeight / 1e6).toFixed(2) + 'M' + suffix;
-                } else if (displayWeight > 1e3) {
-                    document.getElementById('totalWeight').textContent = (displayWeight / 1e3).toFixed(2) + 'K' + suffix;
-                } else {
-                    document.getElementById('totalWeight').textContent = displayWeight.toFixed(2) + suffix;
-                }
+            if (currentType === 'voters') {
+                document.getElementById('totalAmount').textContent = '5.00M YB';
             } else {
-                // Format as weights (0 to 1)
-                if (totalWeight > 1000000) {
-                    document.getElementById('totalWeight').textContent = (totalWeight / 1000000).toFixed(2) + 'M';
-                } else if (totalWeight > 1000) {
-                    document.getElementById('totalWeight').textContent = (totalWeight / 1000).toFixed(2) + 'K';
+                const tokens = total / 1e18;
+                if (tokens > 1e6) {
+                    document.getElementById('totalAmount').textContent = (tokens / 1e6).toFixed(2) + 'M YB';
+                } else if (tokens > 1e3) {
+                    document.getElementById('totalAmount').textContent = (tokens / 1e3).toFixed(2) + 'K YB';
                 } else {
-                    document.getElementById('totalWeight').textContent = totalWeight.toFixed(6);
+                    document.getElementById('totalAmount').textContent = tokens.toFixed(2) + ' YB';
                 }
             }
         }
 
-        function updateDisplay() {
-            const limit = parseInt(document.getElementById('limitInput').value);
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        function render() {
+            const limit = parseInt(document.getElementById('limitSelect').value);
+            const search = document.getElementById('searchInput').value.toLowerCase();
 
-            // Filter data
-            let filteredData = currentData;
-            if (searchTerm) {
-                filteredData = currentData.filter(item =>
-                    item.address.toLowerCase().includes(searchTerm)
-                );
+            let filtered = currentData;
+            if (search) {
+                filtered = currentData.filter(i => i.address.toLowerCase().includes(search));
             }
 
-            // Limit quantity
-            const displayData = limit > 0 ? filteredData.slice(0, limit) : filteredData;
+            const display = limit > 0 ? filtered.slice(0, limit) : filtered;
+            document.getElementById('displayedCount').textContent = display.length.toLocaleString();
 
-            // Update counter
-            document.getElementById('displayedCount').textContent = displayData.length.toLocaleString();
-
-            // Fill table
-            const tbody = document.getElementById('tableBody');
+            const tbody = document.getElementById('tbody');
             tbody.innerHTML = '';
 
-            displayData.forEach((item, index) => {
+            const total = currentData.reduce((s, i) => s + i.weight, 0);
+
+            display.forEach(item => {
+                const rank = currentData.indexOf(item) + 1;
+                const pct = (item.weight / total * 100).toFixed(2);
+                const bar = (item.weight / maxWeight * 100);
+
                 const row = document.createElement('tr');
-                const actualRank = currentData.indexOf(item) + 1;
-
-                const totalWeight = currentData.reduce((sum, i) => sum + i.weight, 0);
-                const percentage = (item.weight / totalWeight * 100).toFixed(4);
-                const barWidth = (item.weight / maxWeight * 100);
-
                 row.innerHTML = `
+                    <td><span class="rank">#${rank}</span></td>
                     <td>
-                        <span class="rank">#${actualRank}</span>
-                        ${actualRank <= 3 ? '<span class="top-badge">TOP</span>' : ''}
+                        ${formatAddr(item.address)}
+                        <button class="copy-btn" onclick="copy('${item.address}')">Copy</button>
                     </td>
+                    <td class="amount">${formatAmount(item.weight)}</td>
+                    <td>${pct}%</td>
                     <td>
-                        ${formatAddress(item.address)}
-                        <button class="copy-btn" onclick="copyAddress('${item.address}')">📋</button>
-                    </td>
-                    <td>${formatWeight(item.weight)}</td>
-                    <td class="percentage">${percentage}%</td>
-                    <td>
-                        <div class="weight-bar">
-                            <div class="bar" style="width: ${barWidth}%"></div>
+                        <div class="bar-container">
+                            <div class="bar" style="width: ${bar}%"></div>
                         </div>
                     </td>
                 `;
-
                 tbody.appendChild(row);
             });
         }
 
-        function formatAddress(address) {
-            // Check if this is a known wallet
-            const knownName = knownWallets[address];
-            if (knownName) {
-                return `<span class="address-name">${knownName}</span> <span class="address" style="font-size: 0.8em; opacity: 0.7;">(${address.slice(0, 6)}...${address.slice(-4)})</span>`;
+        function formatAddr(addr) {
+            const name = knownWallets[addr];
+            if (name) {
+                return `<span class="address-label">${name}</span><span class="address" style="color: #888;">${addr.slice(0, 6)}...${addr.slice(-4)}</span>`;
             }
-            return `<span class="address">${address}</span>`;
+            return `<span class="address">${addr}</span>`;
         }
 
-        function formatWeight(weight) {
-            // Determine if normalization is needed (very large numbers are wei)
-            const needsNormalization = weight > 1e15; // If > quadrillion - it's wei
-
-            if (needsNormalization) {
-                // Normalize: divide by 10^18 to get tokens
-                const tokens = weight / 1e18;
-
-                // Format tokens
-                if (tokens > 1e9) {
-                    return (tokens / 1e9).toFixed(2) + 'B tokens';
-                } else if (tokens > 1e6) {
-                    return (tokens / 1e6).toFixed(2) + 'M tokens';
-                } else if (tokens > 1e3) {
-                    return (tokens / 1e3).toFixed(2) + 'K tokens';
-                } else {
-                    return tokens.toFixed(2) + ' tokens';
-                }
-            } else {
-                // Format as weights (0 to 1) or regular numbers
-                if (weight > 1) {
-                    return weight.toFixed(2);
-                } else {
-                    return weight.toFixed(8);
-                }
+        function formatAmount(w) {
+            if (w > 1e15) {
+                const t = w / 1e18;
+                if (t > 1e6) return (t / 1e6).toFixed(2) + 'M';
+                if (t > 1e3) return (t / 1e3).toFixed(2) + 'K';
+                return t.toFixed(2);
             }
+            return w > 1 ? w.toFixed(2) : w.toFixed(6);
         }
 
-        function copyAddress(address) {
-            navigator.clipboard.writeText(address).then(() => {
+        function copy(addr) {
+            navigator.clipboard.writeText(addr).then(() => {
                 const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '✓';
-                setTimeout(() => btn.textContent = originalText, 1000);
+                const orig = btn.textContent;
+                btn.textContent = 'Copied';
+                setTimeout(() => btn.textContent = orig, 1000);
             });
         }
 
-        function exportToCSV() {
-            const csvContent = [
-                ['Rank', 'Address', 'Weight', 'Percentage'],
-                ...currentData.map((item, index) => {
-                    const totalWeight = currentData.reduce((sum, i) => sum + i.weight, 0);
-                    return [
-                        index + 1,
-                        item.address,
-                        item.weight,
-                        (item.weight / totalWeight * 100).toFixed(4) + '%'
-                    ];
+        function exportCSV() {
+            const rows = [
+                ['Rank', 'Address', 'Amount', 'Percentage'],
+                ...currentData.map((item, i) => {
+                    const total = currentData.reduce((s, it) => s + it.weight, 0);
+                    return [i + 1, item.address, item.weight, (item.weight / total * 100).toFixed(4) + '%'];
                 })
-            ].map(row => row.join(',')).join('\n');
-
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
+            ];
+            const csv = rows.map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `address_distribution_${currentDataType}.csv`;
+            a.download = `yb_distribution_${currentType}.csv`;
             a.click();
-            window.URL.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
         }
 
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', initialize);
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
